@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS 静态钟表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        /* 钟表容器 */
+        .clock {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 8px solid #333;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        /* 表盘刻度 - 小时刻度 */
+        .clock .hour-mark {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 4px;
+            height: 15px;
+            background-color: #333;
+            transform-origin: center 130px; /* 以表盘中心为旋转原点 */
+        }
+        /* 生成12个小时刻度（通过CSS循环） */
+        .clock .hour-mark:nth-child(1) { transform: rotate(0deg); }
+        .clock .hour-mark:nth-child(2) { transform: rotate(30deg); }
+        .clock .hour-mark:nth-child(3) { transform: rotate(60deg); }
+        .clock .hour-mark:nth-child(4) { transform: rotate(90deg); }
+        .clock .hour-mark:nth-child(5) { transform: rotate(120deg); }
+        .clock .hour-mark:nth-child(6) { transform: rotate(150deg); }
+        .clock .hour-mark:nth-child(7) { transform: rotate(180deg); }
+        .clock .hour-mark:nth-child(8) { transform: rotate(210deg); }
+        .clock .hour-mark:nth-child(9) { transform: rotate(240deg); }
+        .clock .hour-mark:nth-child(10) { transform: rotate(270deg); }
+        .clock .hour-mark:nth-child(11) { transform: rotate(300deg); }
+        .clock .hour-mark:nth-child(12) { transform: rotate(330deg); }
+        /* 表盘数字 */
+        .clock .number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 20px;
+            font-weight: bold;
+            transform-origin: center;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            line-height: 40px;
+            margin-top: -20px;
+            margin-left: -20px;
+        }
+        .clock .number-1 { transform: rotate(30deg) translate(0, -110px) rotate(-30deg); }
+        .clock .number-2 { transform: rotate(60deg) translate(0, -110px) rotate(-60deg); }
+        .clock .number-3 { transform: rotate(90deg) translate(0, -110px) rotate(-90deg); }
+        .clock .number-4 { transform: rotate(120deg) translate(0, -110px) rotate(-120deg); }
+        .clock .number-5 { transform: rotate(150deg) translate(0, -110px) rotate(-150deg); }
+        .clock .number-6 { transform: rotate(180deg) translate(0, -110px) rotate(-180deg); }
+        .clock .number-7 { transform: rotate(210deg) translate(0, -110px) rotate(-210deg); }
+        .clock .number-8 { transform: rotate(240deg) translate(0, -110px) rotate(-240deg); }
+        .clock .number-9 { transform: rotate(270deg) translate(0, -110px) rotate(-270deg); }
+        .clock .number-10 { transform: rotate(300deg) translate(0, -110px) rotate(-300deg); }
+        .clock .number-11 { transform: rotate(330deg) translate(0, -110px) rotate(-330deg); }
+        .clock .number-12 { transform: rotate(0deg) translate(0, -110px) rotate(0deg); }
+        /* 指针公共样式 */
+        .clock .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center; /* 以指针底部为旋转原点 */
+            border-radius: 4px;
+        }
+        /* 时针 */
+        .clock .hour-hand {
+            width: 8px;
+            height: 80px;
+            background-color: #333;
+            /* 12小时转一圈（43200秒），动画匀速循环 */
+            animation: rotate 43200s linear infinite;
+        }
+        /* 分针 */
+        .clock .minute-hand {
+            width: 4px;
+            height: 110px;
+            background-color: #666;
+            /* 60分钟转一圈（3600秒），动画匀速循环 */
+            animation: rotate 3600s linear infinite;
+        }
+        /* 秒针 */
+        .clock .second-hand {
+            width: 2px;
+            height: 120px;
+            background-color: #ff4444;
+            /* 60秒转一圈，动画匀速循环 */
+            animation: rotate 60s linear infinite;
+        }
+        /* 指针旋转动画 */
+        @keyframes rotate {
+            from { transform: translateX(-50%) rotate(0deg); }
+            to { transform: translateX(-50%) rotate(360deg); }
+        }
+        /* 表盘中心圆点 */
+        .clock .center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #333;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock">
+        <!-- 12个小时刻度 -->
+        <div class="hour-mark"></div>
+        <div class="hour-mark"></div>
+        <div class="hour-mark"></div>
+        <div class="hour-mark"></div>
+        <div class="hour-mark"></div>
+        <div class="hour-mark"></div>
+        <div class="hour-mark"></div>
+        <div class="hour-mark"></div>
+        <div class="hour-mark"></div>
+        <div class="hour-mark"></div>
+        <div class="hour-mark"></div>
+        <div class="hour-mark"></div>
+
+        <!-- 12个数字 -->
+        <div class="number number-1">1</div>
+        <div class="number number-2">2</div>
+        <div class="number number-3">3</div>
+        <div class="number number-4">4</div>
+        <div class="number number-5">5</div>
+        <div class="number number-6">6</div>
+        <div class="number number-7">7</div>
+        <div class="number number-8">8</div>
+        <div class="number number-9">9</div>
+        <div class="number number-10">10</div>
+        <div class="number number-11">11</div>
+        <div class="number number-12">12</div>
+
+        <!-- 三根指针 -->
+        <div class="hand hour-hand"></div>
+        <div class="hand minute-hand"></div>
+        <div class="hand second-hand"></div>
+
+        <!-- 中心圆点 -->
+        <div class="center-dot"></div>
+    </div>
+</body>
+</html>
