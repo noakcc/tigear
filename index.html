@@ -3,168 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSS 静态钟表</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+    <title>科技导航主页</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        // 配置Tailwind自定义主题
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tech: {
+                            blue: '#00f0ff',
+                            purple: '#9d4edd',
+                            dark: '#0a0e17',
+                            light: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        cyber: ['"Orbitron"', 'sans-serif']
+                    }
+                }
+            }
         }
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f0f0f0;
-        }
-        /* 钟表容器 */
-        .clock {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background-color: #fff;
-            border: 8px solid #333;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        /* 表盘刻度 - 小时刻度 */
-        .clock .hour-mark {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            width: 4px;
-            height: 15px;
-            background-color: #333;
-            transform-origin: center 130px; /* 以表盘中心为旋转原点 */
-        }
-        /* 生成12个小时刻度（通过CSS循环） */
-        .clock .hour-mark:nth-child(1) { transform: rotate(0deg); }
-        .clock .hour-mark:nth-child(2) { transform: rotate(30deg); }
-        .clock .hour-mark:nth-child(3) { transform: rotate(60deg); }
-        .clock .hour-mark:nth-child(4) { transform: rotate(90deg); }
-        .clock .hour-mark:nth-child(5) { transform: rotate(120deg); }
-        .clock .hour-mark:nth-child(6) { transform: rotate(150deg); }
-        .clock .hour-mark:nth-child(7) { transform: rotate(180deg); }
-        .clock .hour-mark:nth-child(8) { transform: rotate(210deg); }
-        .clock .hour-mark:nth-child(9) { transform: rotate(240deg); }
-        .clock .hour-mark:nth-child(10) { transform: rotate(270deg); }
-        .clock .hour-mark:nth-child(11) { transform: rotate(300deg); }
-        .clock .hour-mark:nth-child(12) { transform: rotate(330deg); }
-        /* 表盘数字 */
-        .clock .number {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            font-size: 20px;
-            font-weight: bold;
-            transform-origin: center;
-            width: 40px;
-            height: 40px;
-            text-align: center;
-            line-height: 40px;
-            margin-top: -20px;
-            margin-left: -20px;
-        }
-        .clock .number-1 { transform: rotate(30deg) translate(0, -110px) rotate(-30deg); }
-        .clock .number-2 { transform: rotate(60deg) translate(0, -110px) rotate(-60deg); }
-        .clock .number-3 { transform: rotate(90deg) translate(0, -110px) rotate(-90deg); }
-        .clock .number-4 { transform: rotate(120deg) translate(0, -110px) rotate(-120deg); }
-        .clock .number-5 { transform: rotate(150deg) translate(0, -110px) rotate(-150deg); }
-        .clock .number-6 { transform: rotate(180deg) translate(0, -110px) rotate(-180deg); }
-        .clock .number-7 { transform: rotate(210deg) translate(0, -110px) rotate(-210deg); }
-        .clock .number-8 { transform: rotate(240deg) translate(0, -110px) rotate(-240deg); }
-        .clock .number-9 { transform: rotate(270deg) translate(0, -110px) rotate(-270deg); }
-        .clock .number-10 { transform: rotate(300deg) translate(0, -110px) rotate(-300deg); }
-        .clock .number-11 { transform: rotate(330deg) translate(0, -110px) rotate(-330deg); }
-        .clock .number-12 { transform: rotate(0deg) translate(0, -110px) rotate(0deg); }
-        /* 指针公共样式 */
-        .clock .hand {
-            position: absolute;
-            bottom: 50%;
-            left: 50%;
-            transform-origin: bottom center; /* 以指针底部为旋转原点 */
-            border-radius: 4px;
-        }
-        /* 时针 */
-        .clock .hour-hand {
-            width: 8px;
-            height: 80px;
-            background-color: #333;
-            /* 12小时转一圈（43200秒），动画匀速循环 */
-            animation: rotate 43200s linear infinite;
-        }
-        /* 分针 */
-        .clock .minute-hand {
-            width: 4px;
-            height: 110px;
-            background-color: #666;
-            /* 60分钟转一圈（3600秒），动画匀速循环 */
-            animation: rotate 3600s linear infinite;
-        }
-        /* 秒针 */
-        .clock .second-hand {
-            width: 2px;
-            height: 120px;
-            background-color: #ff4444;
-            /* 60秒转一圈，动画匀速循环 */
-            animation: rotate 60s linear infinite;
-        }
-        /* 指针旋转动画 */
-        @keyframes rotate {
-            from { transform: translateX(-50%) rotate(0deg); }
-            to { transform: translateX(-50%) rotate(360deg); }
-        }
-        /* 表盘中心圆点 */
-        .clock .center-dot {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: #333;
-            transform: translate(-50%, -50%);
-            z-index: 10;
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-glow {
+                text-shadow: 0 0 8px rgba(0, 240, 255, 0.7), 0 0 20px rgba(0, 240, 255, 0.5);
+            }
+            .card-glow {
+                box-shadow: 0 0 15px rgba(157, 78, 221, 0.4), inset 0 0 10px rgba(157, 78, 221, 0.2);
+            }
+            .bg-grid {
+                background-image: 
+                    linear-gradient(rgba(30, 41, 59, 0.8) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(30, 41, 59, 0.8) 1px, transparent 1px);
+                background-size: 20px 20px;
+            }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="clock">
-        <!-- 12个小时刻度 -->
-        <div class="hour-mark"></div>
-        <div class="hour-mark"></div>
-        <div class="hour-mark"></div>
-        <div class="hour-mark"></div>
-        <div class="hour-mark"></div>
-        <div class="hour-mark"></div>
-        <div class="hour-mark"></div>
-        <div class="hour-mark"></div>
-        <div class="hour-mark"></div>
-        <div class="hour-mark"></div>
-        <div class="hour-mark"></div>
-        <div class="hour-mark"></div>
+<body class="min-h-screen bg-tech-dark bg-grid overflow-x-hidden">
+    <!-- 粒子背景容器 -->
+    <div id="particles-js" class="fixed inset-0 z-0 opacity-50"></div>
 
-        <!-- 12个数字 -->
-        <div class="number number-1">1</div>
-        <div class="number number-2">2</div>
-        <div class="number number-3">3</div>
-        <div class="number number-4">4</div>
-        <div class="number number-5">5</div>
-        <div class="number number-6">6</div>
-        <div class="number number-7">7</div>
-        <div class="number number-8">8</div>
-        <div class="number number-9">9</div>
-        <div class="number number-10">10</div>
-        <div class="number number-11">11</div>
-        <div class="number number-12">12</div>
+    <!-- 导航内容 -->
+    <div class="relative z-10 container mx-auto px-4 py-16 flex flex-col items-center">
+        <!-- 标题区域 -->
+        <div class="mb-16 text-center">
+            <h1 class="text-[clamp(2rem,5vw,4rem)] font-cyber font-extrabold text-white text-glow mb-4">
+                TECH NAV
+            </h1>
+            <p class="text-tech-blue text-[clamp(1rem,2vw,1.25rem)] tracking-widest">
+                科技资源导航中心
+            </p>
+            <div class="w-40 h-1 bg-gradient-to-r from-transparent via-tech-blue to-transparent mx-auto mt-6"></div>
+        </div>
 
-        <!-- 三根指针 -->
-        <div class="hand hour-hand"></div>
-        <div class="hand minute-hand"></div>
-        <div class="hand second-hand"></div>
+        <!-- 导航卡片网格 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-5xl">
+            <!-- 导航卡片1 -->
+            <a href="page1.html" class="group">
+                <div class="bg-tech-light/60 backdrop-blur-sm rounded-lg p-6 card-glow transition-all duration-300 group-hover:scale-105 group-hover:bg-tech-light/80">
+                    <div class="w-14 h-14 bg-gradient-to-br from-tech-blue to-tech-purple rounded-full flex items-center justify-center mb-4">
+                        <<i class="fa fa-code text-white text-2xl"></</i>
+                    </div>
+                    <h3 class="font-cyber text-xl font-semibold text-white mb-2">开发者文档</h3>
+                    <p class="text-gray-300 text-sm">技术文档与API参考资源集合</p>
+                </div>
+            </a>
 
-        <!-- 中心圆点 -->
-        <div class="center-dot"></div>
+            <!-- 导航卡片2 -->
+            <a href="page2.html" class="group">
+                <div class="bg-tech-light/60 backdrop-blur-sm rounded-lg p-6 card-glow transition-all duration-300 group-hover:scale-105 group-hover:bg-tech-light/80">
+                    <div class="w-14 h-14 bg-gradient-to-br from-tech-blue to-tech-purple rounded-full flex items-center justify-center mb-4">
+                        <<i class="fa fa-database text-white text-2xl"></</i>
+                    </div>
+                    <h3 class="font-cyber text-xl font-semibold text-white mb-2">数据中心</h3>
+                    <p class="text-gray-300 text-sm">行业数据与可视化分析平台</p>
+                </div>
+            </a>
+
+            <!-- 导航卡片3 -->
+            <a href="page3.html" class="group">
+                <div class="bg-tech-light/60 backdrop-blur-sm rounded-lg p-6 card-glow transition-all duration-300 group-hover:scale-105 group-hover:bg-tech-light/80">
+                    <div class="w-14 h-14 bg-gradient-to-br from-tech-blue to-tech-purple rounded-full flex items-center justify-center mb-4">
+                        <<i class="fa fa-cloud text-white text-2xl"></</i>
+                    </div>
+                    <h3 class="font-cyber text-xl font-semibold text-white mb-2">云服务平台</h3>
+                    <p class="text-gray-300 text-sm">云端工具与资源管理系统</p>
+                </div>
+            </a>
+
+            <!-- 导航卡片4 -->
+            <a href="page4.html" class="group">
+                <div class="bg-tech-light/60 backdrop-blur-sm rounded-lg p-6 card-glow transition-all duration-300 group-hover:scale-105 group-hover:bg-tech-light/80">
+                    <div class="w-14 h-14 bg-gradient-to-br from-tech-blue to-tech-purple rounded-full flex items-center justify-center mb-4">
+                        <<i class="fa fa-line-chart text-white text-2xl"></</i>
+                    </div>
+                    <h3 class="font-cyber text-xl font-semibold text-white mb-2">数据分析</h3>
+                    <p class="text-gray-300 text-sm">数据处理与可视化工具集</p>
+                </div>
+            </a>
+
+            <!-- 导航卡片5 -->
+            <a href="page5.html" class="group">
+                <div class="bg-tech-light/60 backdrop-blur-sm rounded-lg p-6 card-glow transition-all duration-300 group-hover:scale-105 group-hover:bg-tech-light/80">
+                    <div class="w-14 h-14 bg-gradient-to-br from-tech-blue to-tech-purple rounded-full flex items-center justify-center mb-4">
+                        <<i class="fa fa-shield text-white text-2xl"></</i>
+                    </div>
+                    <h3 class="font-cyber text-xl font-semibold text-white mb-2">安全中心</h3>
+                    <p class="text-gray-300 text-sm">网络安全与防护资源库</p>
+                </div>
+            </a>
+
+            <!-- 导航卡片6 -->
+            <a href="page6.html" class="group">
+                <div class="bg-tech-light/60 backdrop-blur-sm rounded-lg p-6 card-glow transition-all duration-300 group-hover:scale-105 group-hover:bg-tech-light/80">
+                    <div class="w-14 h-14 bg-gradient-to-br from-tech-blue to-tech-purple rounded-full flex items-center justify-center mb-4">
+                        <<i class="fa fa-book text-white text-2xl"></</i>
+                    </div>
+                    <h3 class="font-cyber text-xl font-semibold text-white mb-2">学习平台</h3>
+                    <p class="text-gray-300 text-sm">技术学习与教程资源汇总</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- 页脚 -->
+        <div class="mt-20 text-center text-gray-400 text-sm">
+            <p>© 2024 TECH NAV | 科技导航平台</p>
+            <div class="flex justify-center space-x-4 mt-3">
+                <a href="#" class="hover:text-tech-blue transition-colors"><<i class="fa fa-github"></</i></a>
+                <a href="#" class="hover:text-tech-blue transition-colors"><<i class="fa fa-twitter"></</i></a>
+                <a href="#" class="hover:text-tech-blue transition-colors"><<i class="fa fa-linkedin"></</i></a>
+            </div>
+        </div>
     </div>
+
+    <!-- 粒子效果脚本 -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // 初始化粒子背景
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#00f0ff" },
+                shape: { type: "circle" },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#9d4edd",
+                    opacity: 0.2,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "grab" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                },
+                modes: {
+                    grab: { distance: 140, line_linked: { opacity: 0.5 } },
+                    push: { particles_nb: 4 }
+                }
+            },
+            retina_detect: true
+        });
+    </script>
 </body>
 </html>
