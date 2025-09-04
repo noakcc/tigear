@@ -3,186 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>科技导航主页</title>
+    <title>钛极导航主页</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script>
-        // 配置Tailwind自定义主题
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        tech: {
-                            blue: '#00f0ff',
-                            purple: '#9d4edd',
-                            dark: '#0a0e17',
-                            light: '#1e293b'
-                        }
-                    },
-                    fontFamily: {
-                        cyber: ['"Orbitron"', 'sans-serif']
-                    }
-                }
-            }
+    <style>
+        /* 科技感背景动画 */
+        .tech-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            background-size: 400% 400%;
+            animation: bgShift 15s ease infinite;
+            position: relative;
         }
-    </script>
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .text-glow {
-                text-shadow: 0 0 8px rgba(0, 240, 255, 0.7), 0 0 20px rgba(0, 240, 255, 0.5);
-            }
-            .card-glow {
-                box-shadow: 0 0 15px rgba(157, 78, 221, 0.4), inset 0 0 10px rgba(157, 78, 221, 0.2);
-            }
-            .bg-grid {
-                background-image: 
-                    linear-gradient(rgba(30, 41, 59, 0.8) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(30, 41, 59, 0.8) 1px, transparent 1px);
-                background-size: 20px 20px;
-            }
+        .tech-bg::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(56, 189, 248, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 20%);
+            z-index: 0;
+        }
+        @keyframes bgShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* 卡片悬浮效果 */
+        .nav-card {
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(14, 165, 233, 0.2);
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
-<body class="min-h-screen bg-tech-dark bg-grid overflow-x-hidden">
-    <!-- 粒子背景容器 -->
-    <div id="particles-js" class="fixed inset-0 z-0 opacity-50"></div>
-
-    <!-- 导航内容 -->
-    <div class="relative z-10 container mx-auto px-4 py-16 flex flex-col items-center">
-        <!-- 标题区域 -->
-        <div class="mb-16 text-center">
-            <h1 class="text-[clamp(2rem,5vw,4rem)] font-cyber font-extrabold text-white text-glow mb-4">
-                TECH NAV
-            </h1>
-            <p class="text-tech-blue text-[clamp(1rem,2vw,1.25rem)] tracking-widest">
-                科技资源导航中心
-            </p>
-            <div class="w-40 h-1 bg-gradient-to-r from-transparent via-tech-blue to-transparent mx-auto mt-6"></div>
-        </div>
-
-        <!-- 导航卡片网格 -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-5xl">
-            <!-- 导航卡片1 -->
-            <a href="page1.html" class="group">
-                <div class="bg-tech-light/60 backdrop-blur-sm rounded-lg p-6 card-glow transition-all duration-300 group-hover:scale-105 group-hover:bg-tech-light/80">
-                    <div class="w-14 h-14 bg-gradient-to-br from-tech-blue to-tech-purple rounded-full flex items-center justify-center mb-4">
-                        <<i class="fa fa-code text-white text-2xl"></</i>
-                    </div>
-                    <h3 class="font-cyber text-xl font-semibold text-white mb-2">开发者文档</h3>
-                    <p class="text-gray-300 text-sm">技术文档与API参考资源集合</p>
-                </div>
-            </a>
-
-            <!-- 导航卡片2 -->
-            <a href="page2.html" class="group">
-                <div class="bg-tech-light/60 backdrop-blur-sm rounded-lg p-6 card-glow transition-all duration-300 group-hover:scale-105 group-hover:bg-tech-light/80">
-                    <div class="w-14 h-14 bg-gradient-to-br from-tech-blue to-tech-purple rounded-full flex items-center justify-center mb-4">
-                        <<i class="fa fa-database text-white text-2xl"></</i>
-                    </div>
-                    <h3 class="font-cyber text-xl font-semibold text-white mb-2">数据中心</h3>
-                    <p class="text-gray-300 text-sm">行业数据与可视化分析平台</p>
-                </div>
-            </a>
-
-            <!-- 导航卡片3 -->
-            <a href="page3.html" class="group">
-                <div class="bg-tech-light/60 backdrop-blur-sm rounded-lg p-6 card-glow transition-all duration-300 group-hover:scale-105 group-hover:bg-tech-light/80">
-                    <div class="w-14 h-14 bg-gradient-to-br from-tech-blue to-tech-purple rounded-full flex items-center justify-center mb-4">
-                        <<i class="fa fa-cloud text-white text-2xl"></</i>
-                    </div>
-                    <h3 class="font-cyber text-xl font-semibold text-white mb-2">云服务平台</h3>
-                    <p class="text-gray-300 text-sm">云端工具与资源管理系统</p>
-                </div>
-            </a>
-
-            <!-- 导航卡片4 -->
-            <a href="page4.html" class="group">
-                <div class="bg-tech-light/60 backdrop-blur-sm rounded-lg p-6 card-glow transition-all duration-300 group-hover:scale-105 group-hover:bg-tech-light/80">
-                    <div class="w-14 h-14 bg-gradient-to-br from-tech-blue to-tech-purple rounded-full flex items-center justify-center mb-4">
-                        <<i class="fa fa-line-chart text-white text-2xl"></</i>
-                    </div>
-                    <h3 class="font-cyber text-xl font-semibold text-white mb-2">数据分析</h3>
-                    <p class="text-gray-300 text-sm">数据处理与可视化工具集</p>
-                </div>
-            </a>
-
-            <!-- 导航卡片5 -->
-            <a href="page5.html" class="group">
-                <div class="bg-tech-light/60 backdrop-blur-sm rounded-lg p-6 card-glow transition-all duration-300 group-hover:scale-105 group-hover:bg-tech-light/80">
-                    <div class="w-14 h-14 bg-gradient-to-br from-tech-blue to-tech-purple rounded-full flex items-center justify-center mb-4">
-                        <<i class="fa fa-shield text-white text-2xl"></</i>
-                    </div>
-                    <h3 class="font-cyber text-xl font-semibold text-white mb-2">安全中心</h3>
-                    <p class="text-gray-300 text-sm">网络安全与防护资源库</p>
-                </div>
-            </a>
-
-            <!-- 导航卡片6 -->
-            <a href="page6.html" class="group">
-                <div class="bg-tech-light/60 backdrop-blur-sm rounded-lg p-6 card-glow transition-all duration-300 group-hover:scale-105 group-hover:bg-tech-light/80">
-                    <div class="w-14 h-14 bg-gradient-to-br from-tech-blue to-tech-purple rounded-full flex items-center justify-center mb-4">
-                        <<i class="fa fa-book text-white text-2xl"></</i>
-                    </div>
-                    <h3 class="font-cyber text-xl font-semibold text-white mb-2">学习平台</h3>
-                    <p class="text-gray-300 text-sm">技术学习与教程资源汇总</p>
-                </div>
-            </a>
-        </div>
-
-        <!-- 页脚 -->
-        <div class="mt-20 text-center text-gray-400 text-sm">
-            <p>© 2024 TECH NAV | 科技导航平台</p>
-            <div class="flex justify-center space-x-4 mt-3">
-                <a href="#" class="hover:text-tech-blue transition-colors"><<i class="fa fa-github"></</i></a>
-                <a href="#" class="hover:text-tech-blue transition-colors"><<i class="fa fa-twitter"></</i></a>
-                <a href="#" class="hover:text-tech-blue transition-colors"><<i class="fa fa-linkedin"></</i></a>
-            </div>
-        </div>
+<body class="tech-bg min-h-screen flex flex-col items-center justify-center p-4 text-white">
+    <!-- 标题区域 -->
+    <div class="text-center mb-12 z-10">
+        <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-violet-500">
+            钛极导航中心
+        </h1>
+        <p class="text-slate-300 text-lg md:text-xl">高效访问钛极系列平台与工具</p>
     </div>
 
-    <!-- 粒子效果脚本 -->
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script>
-        // 初始化粒子背景
-        particlesJS("particles-js", {
-            particles: {
-                number: { value: 80, density: { enable: true, value_area: 800 } },
-                color: { value: "#00f0ff" },
-                shape: { type: "circle" },
-                opacity: { value: 0.5, random: true },
-                size: { value: 3, random: true },
-                line_linked: {
-                    enable: true,
-                    distance: 150,
-                    color: "#9d4edd",
-                    opacity: 0.2,
-                    width: 1
-                },
-                move: {
-                    enable: true,
-                    speed: 1,
-                    direction: "none",
-                    random: true,
-                    straight: false,
-                    out_mode: "out",
-                    bounce: false
-                }
-            },
-            interactivity: {
-                detect_on: "canvas",
-                events: {
-                    onhover: { enable: true, mode: "grab" },
-                    onclick: { enable: true, mode: "push" },
-                    resize: true
-                },
-                modes: {
-                    grab: { distance: 140, line_linked: { opacity: 0.5 } },
-                    push: { particles_nb: 4 }
-                }
-            },
-            retina_detect: true
-        });
-    </script>
+    <!-- 导航板块容器 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl z-10">
+        <!-- 钛极智能在线工具集 -->
+        <a href="#toolset" class="nav-card bg-slate-800/60 rounded-xl p-8 border border-sky-500/30">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 rounded-lg bg-sky-500/20 flex items-center justify-center mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-4m0 0l4-4m-4 4l-4-4m4 4V4" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-semibold">钛极智能在线工具集</h2>
+            </div>
+            <p class="text-slate-300">包含数据处理、格式转换、AI辅助等多款在线工具，无需安装，即开即用</p>
+        </a>
+
+        <!-- 钛极诺克开源组织 -->
+        <a href="#opensource" class="nav-card bg-slate-800/60 rounded-xl p-8 border border-violet-500/30">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 rounded-lg bg-violet-500/20 flex items-center justify-center mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-semibold">钛极诺克开源组织</h2>
+            </div>
+            <p class="text-slate-300">开源项目仓库、技术文档、贡献指南与社区交流入口，推动技术开源共享</p>
+        </a>
+    </div>
+
+    <!-- 底部信息 -->
+    <div class="mt-16 text-slate-400 text-sm text-center z-10">
+        <p>© 2024 钛极系列平台 | 自适应电脑/手机浏览器</p>
+    </div>
 </body>
 </html>
