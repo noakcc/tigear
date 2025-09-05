@@ -20,7 +20,7 @@
         page-break-after: always;
         font-family: 'Microsoft YaHei', sans-serif;
     }
-    /* 二维码网格布局 - 保持7x4网格 */
+    /* 二维码网格布局 - 保持5x6网格 */
     .barcode-grid {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
@@ -37,7 +37,7 @@
         justify-content: center;
         padding: 1mm 0;
     }
-    /* 调整二维码容器大小以适应7x4网格 */
+    /* 调整二维码容器大小以适应5x6网格 */
     .qrcode-small {
         width: 100%;
         height: auto;
@@ -57,7 +57,7 @@
         text-align: center;
         word-break: break-all;
     }
-        /* 条形码网格布局 - 固定为7x4 */
+        /* 条形码网格布局 - 固定为5x6 */
         .barcode-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -160,7 +160,7 @@
                 <i class="fa fa-barcode text-blue-600 mr-3"></i>
                 装箱单生成工具
             </h1>
-            <p class="text-gray-500 mt-1">支持批量IMEI/SN输入，自动生成4×7网格一维码和包含所有IMEI/SN的二维码</p>
+            <p class="text-gray-500 mt-1">支持批量IMEI/SN输入，自动生成5×6网格二维码和包含所有IMEI/SN的二维码</p>
         </header>
 
         <!-- 操作区（输入+设置） -->
@@ -348,7 +348,7 @@
                 .filter(imei => imei && /^\d+$/.test(imei));
             
             if (imeiList.length === 0) {
-                showError('请输入有效的IMEI/SN号（仅含0-9）');
+                showError('请输入有效的IMEI/SN号');
                 return;
             }
             
