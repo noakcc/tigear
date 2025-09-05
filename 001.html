@@ -345,7 +345,7 @@
             }
             const imeiList = imeiText.split('\n')
                 .map(imei => imei.trim())
-                .filter(imei => imei && /^\d+$/.test(imei));
+                .filter(imei => imei &&  /^[a-zA-Z0-9]+$/.test(imei));
             
             if (imeiList.length === 0) {
                 showError('请输入有效的IMEI/SN号');
