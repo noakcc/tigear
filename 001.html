@@ -217,14 +217,9 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm text-gray-600 mb-2">运营商版本</label>
-                        <select id="operator" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="中国移动" selected>中国移动</option>
-                            <option value="中国联通">中国联通</option>
-                            <option value="中国电信">中国电信</option>
-                            <option value="中国广电">中国广电</option>
-                            <option value="中国铁通">中国铁通</option>
-                            <option value="">-</option>
+                        <label class="block text-sm text-gray-600 mb-2">品名</label>
+                        <select id="product" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="智能一键呼" selected>智能一键呼</option>
                         </select>
                     </div>
                     <div>
@@ -239,7 +234,7 @@
                     </div>
                     <div>
                         <label class="block text-sm text-gray-600 mb-2">重量</label>
-                        <input type="text" id="weight" value="9.8KG" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <input type="text" id="weight" value="11.5KG" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm text-gray-600 mb-2">箱号</label>
@@ -355,7 +350,7 @@
             const packingInfo = document.getElementById('packing-info').value.trim();
             const brand = document.getElementById('brand').value.trim();
             const model = document.getElementById('model').value.trim();
-            const operator = document.getElementById('operator').value.trim();
+            const product = document.getElementById('product').value.trim();
             const color = document.getElementById('color').value.trim();
             const quantity = document.getElementById('quantity').value.trim();
             const weight = document.getElementById('weight').value.trim();
@@ -429,7 +424,7 @@
             productInfoDiv.innerHTML = `
                 <p><strong>公司名称：</strong>${companyName}</p>
                 <p><strong>品牌：</strong>${brand}</p>
-                <p><strong>型号：</strong>${model} ${operator}</p>
+                <p><strong>品名：</strong>${product}&nbsp;&nbsp;&nbsp;&nbsp; <strong>型号：</strong>${model}</p>
                 <p><strong>颜色：</strong>${color}</p>
                 <p><strong>数量：</strong>${quantity}</p>
                 <p><strong>重量：</strong>${weight}</p>
