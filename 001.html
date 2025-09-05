@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>装箱单生成工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <style>
+        /* A4纸核心样式（严格遵循210mm×297mm标准） */
+    .a4-paper {
+        width: 210mm;
+        min-height: 297mm;
+        background: #fff;
+        margin: 0 auto;
+        padding: var(--a4-margin, 10mm);
+        box-sizing: border-box;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        page-break-after: always;
+        font-family: 'Microsoft YaHei', sans-serif;
+    }
+    /* 二维码网格布局 - 保持4x7网格 */
+    .barcode-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(7, 1fr);
+        gap: 3mm;
+        width: 100%;
+        height: 100%;
+    }
+    /* 二维码项样式 */
+    .barcode-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1mm 0;
+    }
+    /* 调整二维码容器大小以适应4x7网格 */
+    .qrcode-small {
+        width: 100%;
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .qrcode-small svg {
+        width: 18mm !important;
+        height: 18mm !important;
+    }
+    .barcode-text {
+        margin-top: 1mm;
+        font-size: 7px;
+        font-family: sans-serif;
+        color: #333;
+        text-align: center;
+        word-break: break-all;
+    }
+        /* 条形码网格布局 - 固定为4x7 */
+        .barcode-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(7, 1fr);
+            gap: 3mm;
+            width: 100%;
+            height: 100%;
+        }
+        /* 条形码项样式（含静区，确保扫描） */
+        .barcode-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2mm 0;
+        }
+        .barcode-svg {
+            width: 100%;
+            height: auto;
+            min-height: 12mm; /* 扫描最小高度阈值 */
+        }
+        .barcode-text {
+            margin-top: 2mm;
+            font-size: 8px;
+            font-family: sans-serif;
+            color: #333;
+            text-align: center;
+            word-break: break-all;
+        }
+        /* 装箱单头部信息 */
+        .packing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10mm;
+            padding-bottom: 5mm;
+            border-bottom: 1px solid #ddd;
+        }
+        .company-info {
+            flex: 1;
+        }
+        .company-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 2mm;
+        }
+        .product-info {
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .qrcode-container {
+            width: 35mm; /* 调整为更合适的大小 */
+            height: 35mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qrcode-container svg {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        /* 打印样式控制 */
+        @media print {
+            
+            body {
+                background: #f5f5f5;
+                margin: 0;
+                padding: 0;
+                zoom: 90%;
+            }
+            .a4-paper {
+                box-shadow: none;
+                margin: 0;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+        }
+        .print-only {
+            display: none;
+            text-align: right;
+            font-size: 10px;
+            color: #666;
+            margin-top: 5mm;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- 标题区 -->
+        <header class="mb-6 no-print">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 flex items-center">
+                <i class="fa fa-barcode text-blue-600 mr-3"></i>
+                装箱单生成工具
+            </h1>
+            <p class="text-gray-500 mt-1">支持批量IMEI/SN输入，自动生成4×7网格一维码和包含所有IMEI/SN的二维码</p>
+        </header>
+
+        <!-- 操作区（输入+设置） -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 no-print">
+            <!-- IMEI/SN输入区 -->
+            <div class="lg:col-span-1 bg-white rounded-lg p-5 shadow-sm border border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">
+                    <i class="fa fa-input-text text-blue-500 mr-2"></i>输入IMEI/SN号
+                </h2>
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-600 mb-2">每行1个IMEI/SN号（最多28个）</label>
+                    <textarea 
+                        id="number-input" 
+                        rows="15" 
+                        placeholder="示例：
+868114070002407
+868114070002183
+..."
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    ></textarea>
+                    <p id="error-tip" class="text-red-500 text-xs mt-2 hidden"></p>
+                </div>
+                <button id="clear-btn" class="w-full py-2 px-4 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 transition mb-3">
+                    <i class="fa fa-eraser mr-1"></i>清空输入
+                </button>
+            </div>
+
+            <!-- 装箱单信息设置区 -->
+            <div class="lg:col-span-2 bg-white rounded-lg p-5 shadow-sm border border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">
+                    <i class="fa fa-th-large text-blue-500 mr-2"></i>装箱单信息设置
+                </h2>
+                
+                <!-- 在装箱单信息设置区中添加装箱信息输入框 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                    <!-- 基本信息设置 -->
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">公司名称</label>
+                        <input type="text" id="company-name" value="天津钛极智能科技有限公司" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">装箱信息</label>
+                        <select id="packing-info" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="IMEI装箱单" selected>IMEI装箱单</option>
+                            <option value="装箱单">装箱单</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">品牌</label>
+                        <input type="text" id="brand" value="钛极" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">型号</label>
+                        <select id="model" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="TiHome-TiBTN" selected>TiHome-TiBTN</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">运营商版本</label>
+                        <select id="operator" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="中国移动" selected>中国移动</option>
+                            <option value="中国联通">中国联通</option>
+                            <option value="中国电信">中国电信</option>
+                            <option value="中国广电">中国广电</option>
+                            <option value="中国铁通">中国铁通</option>
+                            <option value="">-</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">颜色</label>
+                        <select id="color" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="白色" selected>白色</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">数量</label>
+                        <input type="text" id="quantity" value="28台" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">重量</label>
+                        <input type="text" id="weight" value="9.8KG" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">箱号</label>
+                        <input type="text" id="box-number" value="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">总箱数</label>
+                        <input type="text" id="total-boxes" value="100箱" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+                
+                <!-- 边距设置 -->
+                <div class="mb-5">
+                    <label class="block text-sm text-gray-600 mb-2">A4边距</label>
+                    <select id="margin-select" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="5">5mm（紧凑）</option>
+                        <option value="10">10mm（标准）</option>
+                        <option value="15" selected>15mm（安全）</option>
+                    </select>
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div class="flex flex-wrap gap-3">
+                    <button id="generate-btn" class="py-2 px-6 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition flex items-center">
+                        <i class="fa fa-magic mr-2"></i>生成装箱单
+                    </button>
+                    <button id="print-btn" class="py-2 px-6 bg-green-600 text-white rounded-md hover:bg-green-700 transition flex items-center opacity-50 cursor-not-allowed" disabled>
+                        <i class="fa fa-print mr-2"></i>打印预览
+                    </button>
+                    <button id="export-btn" class="py-2 px-6 bg-gray-700 text-white rounded-md hover:bg-gray-800 transition flex items-center opacity-50 cursor-not-allowed" disabled>
+                        <i class="fa fa-file-pdf-o mr-2"></i>导出PDF
+                    </button>
+                </div>
+                
+                <!-- 打印提示 -->
+                <p class="text-xs text-gray-500 mt-3">
+                    <i class="fa fa-info-circle text-blue-500 mr-1"></i>打印时请选择「A4纸张」和「实际尺寸」，避免条码拉伸
+                </p>
+            </div>
+        </div>
+
+        <!-- 预览区 -->
+        <div id="empty-preview" class="text-center py-16 bg-white rounded-lg shadow-sm border border-gray-200">
+            <i class="fa fa-file-text-o text-5xl text-gray-300 mb-4"></i>
+            <p class="text-gray-500">输入IMEI号并点击「生成装箱单」，此处将显示A4排版预览</p>
+        </div>
+
+        <div id="a4-preview" class="hidden mb-8">
+            <!-- A4页面容器（动态生成） -->
+            <div id="a4-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // Code 128C编码表（数字专用，高效压缩）
+        const CODE128C = {
+            0: "11011001100",1: "11001101100",2: "11001100110",3: "10010011000",4: "10010001100",
+            5: "10001001100",6: "10011001000",7: "10011000100",8: "10001100100",9: "11001001000",
+            10:"11001000100",11:"11000100100",12:"10110011100",13:"10011011100",14:"10011001110",
+            15:"10111001100",16:"10011101100",17:"10011100110",18:"11001110010",19:"11001011100",
+            20:"11001001110",21:"11011100100",22:"11001110100",23:"11101101110",24:"11101001100",
+            25:"11100101100",26:"11100100110",27:"11101100100",28:"11100110100",29:"11100110010",
+            30:"11011011000",31:"11011000110",32:"11000110110",33:"10100011000",34:"10001011000",
+            35:"10001000110",36:"10110001000",37:"10001101000",38:"10001100010",39:"11010001000",
+            40:"11000101000",41:"11000100010",42:"10110111000",43:"10110001110",44:"10001101110",
+            45:"10111011000",46:"10111000110",47:"10001110110",48:"11101110110",49:"11010001110",
+            50:"11000101110",51:"11011101000",52:"11011100010",53:"11011101110",54:"11101011000",
+            55:"11101000110",56:"11100010110",57:"11101101000",58:"11101100010",59:"11100011010",
+            60:"11101111010",61:"11001000010",62:"11110001010",63:"10100110000",64:"10100001100",
+            65:"10010110000",66:"10010000110",67:"10000101100",68:"10000100110",69:"10110010000",
+            70:"10110000100",71:"10011010000",72:"10011000010",73:"10000110100",74:"10000110010",
+            75:"11000010010",76:"11001010000",77:"11110111010",78:"11000010100",79:"10001111010",
+            80:"10100111100",81:"10010111100",82:"10010011110",83:"10111100100",84:"10011110100",
+            85:"10011110010",86:"11110100100",87:"11110010100",88:"11110010010",89:"11011011110",
+            90:"11011110110",91:"11110110110",92:"10101111000",93:"10100011110",94:"10001011110",
+            95:"10111101000",96:"10111100010",97:"10001111010",98:"11110101000",99:"11110100010",
+            100:"11110001010",101:"10111011110",102:"10111101110",103:"11101011110",104:"11110101110",
+            105:"11010000110",106:"11010011100",107:"11011100100",108:"110001110100",// 起始符C
+            109:"1101110111011"// 终止符
+        };
+
+        // 全局变量
+        let qrCodeList = []; // 生成的二维码列表
+
+        /**
+         * 生成二维码
+         * @param {string} content - 二维码内容（IMEI/SN号）
+         * @param {number} size - 二维码大小（像素）
+         * @returns {string} 二维码SVG字符串
+         */
+        function generateQRCode(content, size = 120) {
+            try {
+                const qr = qrcode(0, 'M'); // 提高纠错级别以确保小尺寸二维码可扫描
+                qr.addData(content);
+                qr.make();
+                return qr.createSvgTag(4, 0);
+            } catch (error) {
+                console.error('二维码生成失败:', error);
+                return null;
+            }
+        }
+
+        /**
+         * 生成A4排版的装箱单
+         */
+        function generateA4Layout() {
+            // 获取输入和配置
+            const imeiText = document.getElementById('number-input').value.trim();
+            const margin = parseInt(document.getElementById('margin-select').value);
+            
+            // 获取装箱单信息
+            const companyName = document.getElementById('company-name').value.trim();
+            const packingInfo = document.getElementById('packing-info').value.trim();
+            const brand = document.getElementById('brand').value.trim();
+            const model = document.getElementById('model').value.trim();
+            const operator = document.getElementById('operator').value.trim();
+            const color = document.getElementById('color').value.trim();
+            const quantity = document.getElementById('quantity').value.trim();
+            const weight = document.getElementById('weight').value.trim();
+            const boxNumber = document.getElementById('box-number').value.trim();
+            const totalBoxes = document.getElementById('total-boxes').value.trim();
+            
+            // 获取当前日期（格式：YYYY年MM月DD日）
+            const now = new Date();
+            const formattedDate = `${now.getFullYear()}年${String(now.getMonth() + 1).padStart(2, '0')}月`;
+
+            // 输入验证
+            if (!imeiText) {
+                showError('请输入至少1个IMEI/SN号');
+                return;
+            }
+            const imeiList = imeiText.split('\n')
+                .map(imei => imei.trim())
+                .filter(imei => imei && /^\d+$/.test(imei));
+            
+            if (imeiList.length === 0) {
+                showError('请输入有效的IMEI/SN号（仅含0-9）');
+                return;
+            }
+            
+            if (imeiList.length > 28) {
+                showError('IMEI/SN号数量超过28个，无法在一页内显示');
+                return;
+            }
+            
+            hideError();
+
+            // 批量生成二维码
+            qrCodeList = imeiList.map(imei => ({
+                svg: generateQRCode(imei),
+                number: imei
+            }));
+            
+            if (qrCodeList.some(item => !item.svg)) {
+                showError('部分二维码生成失败，请检查输入');
+                return;
+            }
+
+            // 生成顶部汇总二维码
+            const qrContent = imeiList.join('\n');
+            const summaryQrCodeSvg = generateQRCode(qrContent);
+            
+            if (!summaryQrCodeSvg) {
+                showError('汇总二维码生成失败');
+                return;
+            }
+
+            // 创建A4页面
+            const a4Page = document.createElement('div');
+            a4Page.className = 'a4-paper';
+            a4Page.style.setProperty('--a4-margin', `${margin}mm`);
+
+            // 创建装箱单头部
+            const header = document.createElement('div');
+            header.className = 'packing-header';
+            
+            // 公司和产品信息
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'company-info';
+            
+            const titleH2 = document.createElement('h2');
+            titleH2.className = 'company-name';
+            titleH2.textContent = packingInfo || 'IMEI/SN装箱单';
+            
+            const productInfoDiv = document.createElement('div');
+            productInfoDiv.className = 'product-info';
+            productInfoDiv.innerHTML = `
+                <p><strong>公司名称：</strong>${companyName}</p>
+                <p><strong>品牌：</strong>${brand}</p>
+                <p><strong>型号：</strong>${model} ${operator}</p>
+                <p><strong>颜色：</strong>${color}</p>
+                <p><strong>数量：</strong>${quantity}</p>
+                <p><strong>重量：</strong>${weight}</p>
+                <p><strong>生产日期：</strong>${formattedDate}</p>
+                <p><strong>箱号：</strong>${boxNumber}</p>
+                <p><strong>总箱数：</strong>${totalBoxes}</p>
+            `;
+            
+            infoDiv.appendChild(titleH2);
+            infoDiv.appendChild(productInfoDiv);
+            
+            // 汇总二维码
+            const qrDiv = document.createElement('div');
+            qrDiv.className = 'qrcode-container';
+            qrDiv.innerHTML = summaryQrCodeSvg;
+            
+            header.appendChild(infoDiv);
+            header.appendChild(qrDiv);
+
+            // 创建二维码网格容器
+            const grid = document.createElement('div');
+            grid.className = 'barcode-grid';
+            
+            // 添加二维码到网格
+            qrCodeList.forEach(qrCode => {
+                const item = document.createElement('div');
+                item.className = 'barcode-item';
+                // 二维码SVG
+                const svgDiv = document.createElement('div');
+                svgDiv.className = 'qrcode-small';
+                svgDiv.innerHTML = qrCode.svg;
+                // 数字标签
+                const textDiv = document.createElement('div');
+                textDiv.className = 'barcode-text';
+                if (packingInfo === 'IMEI装箱单') {
+                    textDiv.textContent = `IMEI:${qrCode.number}`;
+                } else {
+                    textDiv.textContent = `SN:${qrCode.number}`;
+                }
+                // 组装
+                item.appendChild(svgDiv);
+                item.appendChild(textDiv);
+                grid.appendChild(item);
+            });
+
+            // 组装A4页面
+            a4Page.appendChild(header);
+            a4Page.appendChild(grid);
+
+            // 显示预览
+            document.getElementById('empty-preview').classList.add('hidden');
+            const a4Preview = document.getElementById('a4-preview');
+            a4Preview.classList.remove('hidden');
+            const a4Container = document.getElementById('a4-container');
+            a4Container.innerHTML = '';
+            a4Container.appendChild(a4Page);
+
+            // 启用打印/导出按钮
+            document.getElementById('print-btn').disabled = false;
+            document.getElementById('print-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+            document.getElementById('export-btn').disabled = false;
+            document.getElementById('export-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        /**
+         * 显示错误提示
+         * @param {string} msg - 错误信息
+         */
+        function showError(msg) {
+            const errorEl = document.getElementById('error-tip');
+            errorEl.textContent = msg;
+            errorEl.classList.remove('hidden');
+        }
+
+        /**
+         * 隐藏错误提示
+         */
+        function hideError() {
+            const errorEl = document.getElementById('error-tip');
+            errorEl.classList.add('hidden');
+        }
+
+        /**
+         * 清空输入
+         */
+        function clearInput() {
+            document.getElementById('number-input').value = '';
+            hideError();
+            // 重置预览
+            document.getElementById('a4-preview').classList.add('hidden');
+            document.getElementById('empty-preview').classList.remove('hidden');
+            // 禁用按钮
+            document.getElementById('print-btn').disabled = true;
+            document.getElementById('print-btn').classList.add('opacity-50', 'cursor-not-allowed');
+            document.getElementById('export-btn').disabled = true;
+            document.getElementById('export-btn').classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        /**
+         * 打印预览
+         */
+        function printPreview() {
+            window.print();
+        }
+
+        /**
+         * 导出PDF（引导用户用打印到PDF）
+         */
+        function exportPDF() {
+            alert('请在打印窗口中选择「Microsoft Print to PDF」或「另存为PDF」，即可导出为PDF文件');
+            window.print();
+        }
+
+        /**
+         * 更新数量信息
+         */
+        function updateQuantityInfo() {
+            const imeiText = document.getElementById('number-input').value.trim();
+            const quantityInput = document.getElementById('quantity');
+            
+            if (!imeiText) {
+                quantityInput.value = '0台';
+                return;
+            }
+            
+            const imeiList = imeiText.split('\n')
+                .map(imei => imei.trim())
+                .filter(imei => imei && /^\d+$/.test(imei));
+            
+            quantityInput.value = imeiList.length + '台';
+        }
+
+        // 初始化事件监听
+        document.addEventListener('DOMContentLoaded', () => {
+            // 生成按钮
+            document.getElementById('generate-btn').addEventListener('click', generateA4Layout);
+            // 打印按钮
+            document.getElementById('print-btn').addEventListener('click', printPreview);
+            // 导出按钮
+            document.getElementById('export-btn').addEventListener('click', exportPDF);
+            // 清空按钮
+            document.getElementById('clear-btn').addEventListener('click', clearInput);
+
+            // 边距设置变更时重新生成
+            document.getElementById('margin-select').addEventListener('change', generateA4Layout);
+            
+            // IMEI/SN输入变化时更新数量信息
+            document.getElementById('number-input').addEventListener('input', updateQuantityInfo);
+            
+            // 页面加载时初始化数量信息
+            updateQuantityInfo();
+        });
+    </script>
+</body>
+</html>
