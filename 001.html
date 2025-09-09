@@ -529,7 +529,7 @@
             
             const imeiList = imeiText.split('\n')
                 .map(imei => imei.trim())
-                .filter(imei => imei && /^\d+$/.test(imei));
+                .filter(imei => imei && /^[a-zA-Z0-9]+$/.test(imei));
             
             quantityInput.value = imeiList.length + '台';
         }
