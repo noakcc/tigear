@@ -1,0 +1,126 @@
+/* 全局样式重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Microsoft YaHei", Arial, sans-serif;
+}
+
+body {
+  background-color: #f5f7fa;
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* 标题样式 */
+h1 {
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+/* 查询容器 */
+.query-container {
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+}
+
+/* 选择器+输入框+按钮 */
+.select-box, .input-box, .btn {
+  margin: 0 8px 10px 0;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+}
+
+.select-box, .input-box {
+  width: 200px;
+}
+
+.input-box:focus {
+  border-color: #409eff;
+}
+
+.btn {
+  background-color: #409eff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn:hover {
+  background-color: #337ecc;
+}
+
+/* 导出按钮单独样式 */
+#exportBtn {
+  background-color: #67c23a;
+  display: none; /* 默认隐藏，有结果时显示 */
+}
+
+#exportBtn:hover {
+  background-color: #529b2e;
+}
+
+/* 结果展示区 */
+.result-container {
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.result-container h3 {
+  color: #333;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+/* 结果表格 */
+#resultTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+#resultTable th, #resultTable td {
+  padding: 12px;
+  border: 1px solid #eee;
+}
+
+#resultTable th {
+  background-color: #f8f9fa;
+  color: #666;
+  font-weight: 500;
+}
+
+#resultTable tr:hover {
+  background-color: #f5f7fa;
+}
+
+/* 空结果提示 */
+.empty-tip {
+  color: #999;
+  text-align: center;
+  padding: 30px 0;
+}
+
+/* 响应式适配（手机/平板） */
+@media (max-width: 768px) {
+  .select-box, .input-box {
+    width: 100%;
+    margin-right: 0;
+  }
+  .btn {
+    width: 100%;
+    margin-right: 0;
+  }
+}

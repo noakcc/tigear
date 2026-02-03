@@ -1,0 +1,26 @@
+[
+  {
+    "model": "PRO-2024-A01",
+    "leader": "张三"
+  },
+  {
+    "model": "PRO-2024-A02",
+    "leader": "张三"
+  },
+  {
+    "model": "PRO-2024-B01",
+    "leader": "李四"
+  },
+  {
+    "model": "PRO-2024-B02",
+    "leader": "李四"
+  },
+  {
+    "model": "PRO-2024-C01",
+    "leader": "王五"
+  },
+  {
+    "model": "PRO-2024-D01",
+    "leader": "赵六"
+  }
+]

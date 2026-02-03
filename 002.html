@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>产品型号-研发负责人查询系统</title>
+  <!-- 引入样式文件 -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>产品型号和研发负责人查询系统</h1>
+
+  <!-- 查询区域 -->
+  <div class="query-container">
+    <select class="select-box" id="queryType">
+      <option value="model">按产品型号查询</option>
+      <option value="leader">按研发负责人查询</option>
+    </select>
+    <input type="text" class="input-box" id="queryInput" placeholder="请输入查询内容...">
+    <button class="btn" id="queryBtn">查询</button>
+    <button class="btn" id="exportBtn">导出查询结果为CSV</button>
+  </div>
+
+  <!-- 结果展示区域 -->
+  <div class="result-container">
+    <h3>查询结果</h3>
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th>产品型号</th>
+          <th>研发负责人</th>
+        </tr>
+      </thead>
+      <tbody id="resultBody">
+        <!-- 结果动态渲染 -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // 全局变量：存储查询结果（用于导出CSV）
+    let queryResult = [];
+
+    // 页面加载完成后读取JSON数据
+    window.onload = async function() {
+      try {
+        // 读取本地JSON数据文件
+        const response = await fetch('data.json');
+        if (!response.ok) throw new Error('数据文件读取失败，请检查data.json是否存在');
+        window.productData = await response.json(); // 数据挂载到全局，供查询使用
+      } catch (err) {
+        alert('初始化失败：' + err.message);
+        console.error(err);
+      }
+    };
+
+    // 绑定查询按钮点击事件
+    document.getElementById('queryBtn').addEventListener('click', queryHandler);
+    // 绑定回车查询（输入框按回车触发查询）
+    document.getElementById('queryInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') queryHandler();
+    });
+    // 绑定导出按钮点击事件
+    document.getElementById('exportBtn').addEventListener('click', exportToCSV);
+
+    // 核心查询逻辑
+    function queryHandler() {
+      const queryType = document.getElementById('queryType').value; // model/leader
+      const queryValue = document.getElementById('queryInput').value.trim();
+      const resultBody = document.getElementById('resultBody');
+      const exportBtn = document.getElementById('exportBtn');
+
+      // 清空上一次结果
+      resultBody.innerHTML = '';
+      queryResult = [];
+      exportBtn.style.display = 'none';
+
+      // 校验输入
+      if (!queryValue) {
+        alert('请输入查询内容！');
+        return;
+      }
+      if (!window.productData) {
+        alert('数据未加载完成，请稍后再试！');
+        return;
+      }
+
+      // 双向查询逻辑
+      if (queryType === 'model') {
+        // 按产品型号查询：精准匹配（可修改为includes实现模糊查询）
+        queryResult = window.productData.filter(item => item.model === queryValue);
+      } else {
+        // 按研发负责人查询：模糊匹配（输入“张”可查到所有姓张的负责人产品）
+        queryResult = window.productData.filter(item => item.leader.includes(queryValue));
+      }
+
+      // 渲染查询结果
+      if (queryResult.length === 0) {
+        // 无结果
+        resultBody.innerHTML = '<tr><td colspan="2" class="empty-tip">暂无匹配结果</td></tr>';
+      } else {
+        // 有结果：动态生成行
+        queryResult.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${item.model}</td><td>${item.leader}</td>`;
+          resultBody.appendChild(tr);
+        });
+        // 显示导出按钮
+        exportBtn.style.display = 'inline-block';
+      }
+    }
+
+    // 导出查询结果为CSV文件
+    function exportToCSV() {
+      if (queryResult.length === 0) return;
+
+      // 1. 构造CSV内容：首行为表头，后续为数据
+      const csvHeader = '产品型号,研发负责人\n';
+      const csvContent = queryResult.map(item => `${item.model},${item.leader}`).join('\n');
+      const fullCsv = csvHeader + csvContent;
+
+      // 2. 转换为Blob对象（处理中文编码，避免乱码）
+      const blob = new Blob(['\uFEFF' + fullCsv], { type: 'text/csv;charset=utf-8;' });
+
+      // 3. 创建下载链接并触发下载
+      const downloadLink = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      // 文件名：查询类型_时间戳.csv
+      const queryType = document.getElementById('queryType').value === 'model' ? '产品型号' : '研发负责人';
+      const fileName = `${queryType}查询结果_${new Date().getTime()}.csv`;
+      downloadLink.href = url;
+      downloadLink.download = fileName;
+      document.body.appendChild(downloadLink);
+      downloadLink.click(); // 触发下载
+      document.body.removeChild(downloadLink);
+      URL.revokeObjectURL(url); // 释放URL对象
+    }
+  </script>
+</body>
+</html>
