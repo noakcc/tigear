@@ -87,10 +87,10 @@
 
       // 双向查询逻辑
       if (queryType === 'model') {
-        // 按产品型号查询：精准匹配（可修改为includes实现模糊查询）
-        queryResult = window.productData.filter(item => item.model === queryValue);
+        // 按产品型号查询：模糊匹配
+        queryResult = window.productData.filter(item => item.model.includes(queryValue));
       } else {
-        // 按研发负责人查询：模糊匹配（输入“张”可查到所有姓张的负责人产品）
+        // 按研发负责人查询：模糊匹配（输入"张"可查到所有姓张的负责人产品）
         queryResult = window.productData.filter(item => item.leader.includes(queryValue));
       }
 
